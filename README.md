@@ -51,3 +51,28 @@ In R 3.6 or later.
 ```R
 install.packages("Seurat")
 ```
+For more installation instructions for Seurat, see https://satijalab.org/seurat/articles/install.html
+For more detailed tutorials for Seurat, see https://satijalab.org/seurat/articles/get_started.html
+
+***4) Download genome and annotation files***
+To download genome files:
+```bash
+#Navigate to $WORKDIR/genomefasta
+for (( i = 1; i <= 2; i++ ))
+  do
+wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.$i.fa.gz
+  done
+wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.X.fa.gz
+wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.Y.fa.gz
+wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.MT.fa.gz
+wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.nonchromosomal.fa.gz
+```
+To download gtf annotation file:
+```bash
+#Navigate to $WORKDIR/gtf
+wget Homo_sapiens.GRCh38.98.gtf.gz
+```
+
+***5) Create STAR index***
+
+
