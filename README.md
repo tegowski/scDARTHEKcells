@@ -214,8 +214,7 @@ STAR --runMode inputAlignmentsFromBAM \
 
 
 ***2) Parse bamfiles***
-First, parse the bamfiles 
-
+First, parse the bamfiles of each APOBEC1-YTH-expressing cell
 ```bash
 #!/bin/bash
 #SBATCH -a 1-1254
@@ -225,7 +224,23 @@ file=$(ls WT*dupMarked.bam | sed -n ${SLURM_ARRAY_TASK_ID}p)
 STEM=$(basename "$file" .dupmarked.bam)
 mkdir $WORKDIR/matrix
 
-perl $WORKDIR/software/parseBAM.pl -i $file -o $WORKDIR/matrix/$STEM.matrix --minCoverage 3 -v --removeDuplicates
-
+perl $WORKDIR/software/parseBAM.pl -i $file -o $WORKDIR/matrix/$STEM.matrix --minCoverage 3 --verbose --removeDuplicates
 ```
+
+The APOBEC1-YTHmut-expressing cells are merged together at the bam level to create an average editing score.
+```bash
+#!/bin/bash
+
+filelist=$(cat listofAPOYTHmutbamfiles.txt)
+samtools merge APOYTHmutmerge.bam $filelist
+```
+
+Then the merged APOBEC1-YTHmut bamfile is parsed.
+```bash
+#!/bin/bash
+
+perl $WORKDIR/software/parseBAM.pl --input APOYTHmutmerge.bam --output $WORKDIR/matrix/APOYTHmut.matrix --verbose --removeDuplicates --minCoverage 3
+```
+
+***3) Find C-to-U mutations***
 
