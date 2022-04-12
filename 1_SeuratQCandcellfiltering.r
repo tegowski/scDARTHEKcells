@@ -136,3 +136,5 @@ metadata_clean %>%
 save(filtered_Seurat, file="Data/293SMARTDART_filtered.RData")
 
 length(filtered_Seurat@meta.data$nGene)
+FilteredCells <- filtered_Seurat@meta.data$cells
+write.table(FilteredCells,file="$WORKDIR/Data/QCpasscells.txt,row.names=F,col.names=T,sep="\t",quote=F)
