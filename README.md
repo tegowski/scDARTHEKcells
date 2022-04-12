@@ -204,15 +204,28 @@ STAR --runMode alignReads \
 --outFilterMismatchNoverReadLmax 0.06 \
 --outFileNamePrefix $BAM/${STEM}. \
 
+#This next steps marks PCR duplicates in the BAM file so they can be ignored during the next step
+STAR --runMode inputAlignmentsFromBAM \
+--runThreadN 4 \
+--inputBAMfile $BAM/${STEM}.Aligned.sortedByCoord.out.bam \
+--bamRemoveDuplicatesType UniqueIdentical \
+--outFileNamePrefix $BAM/${STEM}.dupMarked.bam
 ```
 
+
 ***2) Parse bamfiles***
-This requires the ParseBam.pl script which can be downloaded from https://github.com/mflamand/Bullseye.
+First, parse the bamfiles 
 
 ```bash
 #!/bin/bash
-#SBATCH -a 1-1667
+#SBATCH -a 1-1254
 
+BAMS=$WORKDIR/singlebams
+file=$(ls WT*dupMarked.bam | sed -n ${SLURM_ARRAY_TASK_ID}p)
+STEM=$(basename "$file" .dupmarked.bam)
+mkdir $WORKDIR/matrix
+
+perl $WORKDIR/software/parseBAM.pl -i $file -o $WORKDIR/matrix/$STEM.matrix --minCoverage 3 -v --removeDuplicates
 
 ```
 
