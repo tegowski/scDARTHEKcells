@@ -1,12 +1,12 @@
 # scDART in HEK293T cells
 
 ## **Overview**
-This contains information necessary for reproducing the identification of m<sup>6</sup>A 
+This contains information necessary for reproducing the identification of m<sup>6</sup>A. Please replace all instances of $WORKDIR with path to your working directory.
 
 **Prerequisites**
 1) Download raw fastq files
 2) Generate manifest file
-3) Download flexbar (v3.0.3) and STAR (v2.7.5a), preferably into conda environment
+3) Download and install flexbar (v3.0.3) and STAR (v2.7.5a), preferably into conda environment
 4) Download Seurat (v3.2 or later)
 5) Download genome and annotation files
 6) Create STAR index for genome alignment
@@ -16,6 +16,8 @@ This contains information necessary for reproducing the identification of m<sup>
 Raw sequencing files are stored at SRA under the accession number GSE180954.
 Files with SRA run numbers between SRR15268425-SRR15268461 and SRR15268889-SRR15270105 are APOBEC1-YTH-expressing, while those between SRR15268461-SRR15268876 are APOBEC1-YTHmut-expressing.
 ```bash
+#!/bin/bash
+
 for (( i = 68425; i <= 68461; i++ ))
   do
 fastq-dump --outdir $WORKDIR/YTH --split-files SRR152$i
@@ -52,9 +54,31 @@ ls *WT
 ```
 
 
-***3) Download flexbar and STAR***
-If using conda environment.
+***3) Install Bullseye, flexbar, and STAR***
+It is easiest to install all requisite materials in a conda environment if you don't have root access. Please see https://github.com/mflamand/Bullseye for detailed instructions for installing Bullseye and requisite Perl modules.
+
+
+First, download Bullseye scripts from https://github.com/mflamand/Bullseye and move them to $WORKDIR/software
+
 ```bash
+#Navigate to $WORKDIR
+#Create conda environment and install required Perl modules for Bullseye
+
+conda env create -f bullseye.yml
+conda activate Bullseye
+wget http://www.cpan.org/authors/id/T/TO/TODDR/XML-Parser-2.46.tar.gz 
+tar -xf XML-Parser-2.46.tar.gz
+cd XML-Parser-2.46 
+perl Makefile.PL EXPATLIBPATH=$CONDA_PREFIX/lib EXPATINCPATH=$CONDA_PREFIX/include
+make
+make install
+
+cpanm Bio::DB::Fasta
+cpanm Text::NSP
+cpanm Array::IntSpan
+cpanm MCE
+
+#Install flexbar and STAR
 conda install -c bioconda flexbar=3.0.3
 conda install -c bioconda STAR=2.7.5a
 ```
@@ -149,4 +173,46 @@ STAR --genomeDir $WORKDIR/STARindex/ \
 ###**Using Seurat to perform QC and eliminate low quality cells**
 Move the output files from STARsolo (barcodes.tsv, features.tsv,matrix.mtx) to a new directory $WORKDIR/Data so that there are subdirectories for each batch that was run for the genome alignment ($WORKDIR/Data/WT1/, $WORKDIR/Data/WT2/, $WORKDIR/Data/WT3/, etc.). Then open an R session and run the "1_SeuratQCandcellfiltering.R" script. This will take all the files, create a Seurat Object, perform basic QC and generate graphs. THen it filter cells based on several criteria: at least 1,000,000 reads, at least 9,000 genes, a log10genes/reads ratio of 0.58, less than 10% mitochondrial RNAs. Then it will generate the QC graphs on the filtered dataset.
 
+###Using Bullseye to identify m<sup>6</sup> methylation
+*Please see https://github.com/mflamand/Bullseye for instructions on installation of Bullseye*
+
+There are 4 Major Steps
+1) Genome alignment
+2) Bamfile parsing
+3) Identification of C-to-U mutations
+4) Filtering of results for high confidence sites
+
+***1) Genome alignment***
+For the analysis of methylation, it is easiest to align the sequences to the genome again using STAR, but not the STARsolo option. This will generate a separate bamfile for each cell. It is easiest to do this as an array, so that many files be aligned simultaneously. The #SBATCH -a option allows for this with the SLURM managment system. If you are not using SLURM, you may need to change the command. If these are run sequencially the job will be a very long time.
+```bash
+#!/bin/bash
+#SBATCH -a 1-1667
+
+file=$(ls *_1.fastq.gz | sed -n ${SLURM_ARRAY_TASK_ID}p) ## this is done for paired end libraries ending with _1 and _2 for each pair.
+STEM=$(basename "$file" _1.fastq.gz)
+BAM=$WORKDIR/singlebams
+mkdir -p $BAM
+
+echo "aligning $STEM"
+
+STAR --runMode alignReads \
+--genomeDir $WORKDIR/Starindex \
+--runThreadN 8 \
+--readFilesIn $dir/${STEM}_1.fastq.gz $dir/${STEM}_2.fastq.gz \
+--readFilesCommand zcat \
+--outSAMtype BAM SortedByCoordinate \
+--outFilterMismatchNoverReadLmax 0.06 \
+--outFileNamePrefix $BAM/${STEM}. \
+
+```
+
+***2) Parse bamfiles***
+This requires the ParseBam.pl script which can be downloaded from https://github.com/mflamand/Bullseye.
+
+```bash
+#!/bin/bash
+#SBATCH -a 1-1667
+
+
+```
 
