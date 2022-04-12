@@ -30,7 +30,11 @@ for (( i = 68461; i <= 68876; i++ ))
 fastq-dump --outdir $WORKDIR/YTHmut --split-files SRR152$i
   done
 ```
-Then rename all the files to include a cell number and transgene expression status
+Rename all the APOBEC1-YTH-expressing files to include a cell number and transgene expression status
+```bash
+
+```
+Rename all the APOBEC1-YTHmut-expressing files to include a cell number and transgene expression status
 ```bash
 
 ```
@@ -74,5 +78,15 @@ wget Homo_sapiens.GRCh38.98.gtf.gz
 ```
 
 ***5) Create STAR index***
+```bash
+STAR --runThreadN 4 \
+--runMode genomeGenerate \
+--genomeDir $WORKDIR/STARindex \
+--genomeFastaFiles $WORKDIR/genomefasta/* \
+--sjdbGTFfile $WORKDIR/gtf/Homo_sapiens.GRCh38.98.gtf \
+--sjdbOverhang 49 \
+--genomeSAindexNbases 3
+```
 
+**
 
