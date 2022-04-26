@@ -16,40 +16,34 @@ This contains information necessary for reproducing the identification of m<sup>
 Raw sequencing files are stored at SRA under the accession number GSE180954.
 Files with SRA run numbers between SRR15268425-SRR15268461 and SRR15268889-SRR15270105 are APOBEC1-YTH-expressing, while those between SRR15268461-SRR15268876 are APOBEC1-YTHmut-expressing.
 ```bash
-#!/bin/bash
-
-for (( i = 68425; i <= 68461; i++ ))
-  do
-fastq-dump --outdir $WORKDIR/YTH --split-files SRR152$i
-  done
-
-for (( i = 68889; i <= 70105; i++ ))
-  do
-fastq-dump --outdir $WORKDIR/YTH --split-files SRR152$i
-  done
-  
-for (( i = 68461; i <= 68876; i++ ))
-  do
-fastq-dump --outdir $WORKDIR/YTHmut --split-files SRR152$i
-  done
+#In the $WORKDIR/software directory, run the script to download SMART-seq single-cell fastq files
+sbatch fastqdump.sh
 ```
-Rename all the APOBEC1-YTH-expressing files to include a cell number and transgene expression status
+Rename all the APOBEC1-YTH-expressing files to include a cell number and transgene expression status.
+Move the renameYTH.sh script to $WORKDIR/YTH and submit the job
 ```bash
-
+sbatch renameYTH.sh
 ```
-Rename all the APOBEC1-YTHmut-expressing files to include a cell number and transgene expression status
+Rename all the APOBEC1-YTHmut-expressing files to include a cell number and transgene expression status.
+Move the renameYTHmut.sh script to $WORKDIR/YTHmut and submit the job
 ```bash
-
+sbatch renameYTHmut.sh
 ```
-Then put them all in the same rawfiles directory
+Move all files to the same $WORKDIR/rawfiles directory
 ```bash
-
+#In $WORKDIR
+mkdir rawfiles
+cd YTH
+mv * ../rawfiles
+cd ../YTHmut
+mv * ../rawfiles
 ```
+
 ***2) Make manifest file***
 The manifest file is required for using STARsolo. This file is tab separated and contains 3 columns. 1) read1-file 2) read2-file 3) read-group.
 
 ```bash
-ls *WT
+
 
 ```
 
@@ -61,7 +55,7 @@ It is easiest to install all requisite materials in a conda environment if you d
 First, download Bullseye scripts from https://github.com/mflamand/Bullseye and move them to $WORKDIR/software
 
 ```bash
-#Navigate to $WORKDIR
+#Navigate to $WORKDIR/software
 #Create conda environment and install required Perl modules for Bullseye
 
 conda env create -f bullseye.yml
@@ -80,7 +74,7 @@ cpanm MCE
 
 #Install flexbar and STAR
 conda install -c bioconda flexbar=3.0.3
-conda install -c bioconda STAR=2.7.5a
+conda install -c bioconda STAR=2.7.5c
 ```
 
 ***4) Download Seurat***
