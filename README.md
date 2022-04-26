@@ -14,6 +14,7 @@ This contains information necessary for reproducing the identification of m<sup>
 ***1) Download raw fastq files***
 Raw sequencing files are stored at SRA under the accession number GSE180954.
 Files with SRA run numbers between SRR15268425-SRR15268461 and SRR15268889-SRR15270105 are APOBEC1-YTH-expressing, while those between SRR15268461-SRR15268876 are APOBEC1-YTHmut-expressing.
+Downloading could take several days, and the files are nearly 2TB of memory in total.
 ```bash
 #In the $WORKDIR/software directory, run the script to download SMART-seq single-cell fastq files
 sbatch fastqdump.sh
