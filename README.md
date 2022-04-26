@@ -5,11 +5,10 @@ This contains information necessary for reproducing the identification of m<sup>
 
 **Prerequisites**
 1) Download raw fastq files
-2) Generate manifest file
-3) Download and install flexbar (v3.0.3) and STAR (v2.7.5a), preferably into conda environment
-4) Download Seurat (v3.2 or later)
-5) Download genome and annotation files
-6) Create STAR index for genome alignment
+2) Download and install flexbar (v3.0.3) and STAR (v2.7.5a), preferably into conda environment
+3) Download Seurat (v3.2 or later)
+4) Download genome and annotation files
+5) Create STAR index for genome alignment
 
 
 ***1) Download raw fastq files***
@@ -39,16 +38,7 @@ cd ../YTHmut
 mv * ../rawfiles
 ```
 
-***2) Make manifest file***
-The manifest file is required for using STARsolo. This file is tab separated and contains 3 columns. 1) read1-file 2) read2-file 3) read-group.
-
-```bash
-
-
-```
-
-
-***3) Install Bullseye, flexbar, and STAR***
+***2) Install Bullseye, flexbar, and STAR***
 It is easiest to install all requisite materials in a conda environment if you don't have root access. Please see https://github.com/mflamand/Bullseye for detailed instructions for installing Bullseye and requisite Perl modules.
 
 
@@ -77,7 +67,7 @@ conda install -c bioconda flexbar=3.0.3
 conda install -c bioconda STAR=2.7.5c
 ```
 
-***4) Download Seurat***
+***3) Download Seurat***
 In R 3.6 or later.
 ```R
 install.packages("Seurat")
@@ -85,11 +75,11 @@ install.packages("Seurat")
 For more installation instructions for Seurat, see https://satijalab.org/seurat/articles/install.html
 For more detailed tutorials for Seurat, see https://satijalab.org/seurat/articles/get_started.html
 
-***5) Download genome and annotation files***
+***4) Download genome and annotation files***
 To download genome files:
 ```bash
 #Navigate to $WORKDIR/genomefasta
-for (( i = 1; i <= 2; i++ ))
+for (( i = 1; i <= 22; i++ ))
   do
 wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.$i.fa.gz
   done
@@ -97,22 +87,21 @@ wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.G
 wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.Y.fa.gz
 wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.chromosome.MT.fa.gz
 wget http://ftp.ensembl.org/pub/release-98/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.nonchromosomal.fa.gz
+gunzip *
 ```
 To download gtf annotation file:
 ```bash
 #Navigate to $WORKDIR/gtf
-wget Homo_sapiens.GRCh38.98.gtf.gz
+mkdir $WORKDIR/gtf
+cd $WORKDIR/gtf
+wget 'http://ftp.ensembl.org/pub/release-98/gtf/homo_sapiens/Homo_sapiens.GRCh38.98.gtf.gz'
+gunzip *
 ```
 
-***6) Create STAR index***
+***5) Create STAR index***
 ```bash
-STAR --runThreadN 4 \
---runMode genomeGenerate \
---genomeDir $WORKDIR/STARindex \
---genomeFastaFiles $WORKDIR/genomefasta/* \
---sjdbGTFfile $WORKDIR/gtf/Homo_sapiens.GRCh38.98.gtf \
---sjdbOverhang 49 \
---genomeSAindexNbases 3
+cd $WORKDIR/software
+sbatch STARindex.sh
 ```
 
 ## **Data Processing**
@@ -128,6 +117,7 @@ Flexbar (3.0.3) is used for trimming adapter sequences on reads. Since Nextera-c
 #!/bin/bash
 #SBATCH -a 1-1667
 
+WORKDIR=/your/path/here
 FASTQ=$WORKDIR/rawfiles #input directory
 TRIM=$WORKDIR/trim #output directory
 mkdir -p $TRIM
