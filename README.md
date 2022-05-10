@@ -29,14 +29,10 @@ Move the renameYTHmut.sh script to $WORKDIR/YTHmut and submit the job
 ```bash
 sbatch renameYTHmut.sh
 ```
-Move all files to the same $WORKDIR/rawfiles directory
+Once you are **sure** the files have been renamed and moved to the $WORKDIR/rawfiles directory, you can delete the originals. The scripts above copy the files, preventing the need to redownload in the case of an error.
 ```bash
-#In $WORKDIR
-mkdir rawfiles
-cd YTH
-mv * ../rawfiles
-cd ../YTHmut
-mv * ../rawfiles
+rm $WORKDIR/YTH/*
+rm $WORKDIR/YTHmut/*
 ```
 
 ***2) Install Bullseye, flexbar, and STAR***
