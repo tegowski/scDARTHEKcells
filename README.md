@@ -1,7 +1,7 @@
 # scDART in HEK293T cells
 
 ## **Overview**
-This contains information necessary for reproducing the identification of m<sup>6</sup>A. Please replace all instances of $WORKDIR with path to your working directory.
+This contains information necessary for reproducing the identification of m<sup>6</sup>A. In this example, 300 APOBEC1-YTH and 300 APOBEC1-YTHmut expressing cells will be analyzed. Please replace all instances of $WORKDIR with path to your working directory.
 
 **Prerequisites**
 1) Download raw fastq files
