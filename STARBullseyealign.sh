@@ -2,10 +2,9 @@
 #SBATCH -a 1-601
 #SBATCH -c 8
 #SBATCH --mem=60G
-#SBATCH -p scavenger
 
 #Define path to your working directory
-WORKDIR="/work/mrt41/Ex96_SMARTseq/test"
+WORKDIR="/your/path/here"
 
 file=$(ls *_1.fastq | sed -n ${SLURM_ARRAY_TASK_ID}p) ## this is done for paired end libraries ending with _1 and _2 for each pair.
 STEM=$(basename "$file" _1.fastq)
