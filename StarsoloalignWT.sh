@@ -1,12 +1,11 @@
 #!/bin/bash
 #SBATCH -a 1-2
-#SBATCH -p scavenger
 #SBATCH -c 8
 #SBATCH --mem=60G
 
 #This script should be run from the $WORKDIR/YTH directory
 #Replace $WORKDIR with the path to your directory
-WORKDIR="/work/mrt41/Ex96_SMARTseq/test"
+WORKDIR="/your/path/here"
 mkdir -p $WORKDIR/aligned
 
 #Defines list of fastq files for each batch to be aligned
