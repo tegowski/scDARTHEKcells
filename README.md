@@ -111,13 +111,19 @@ The first two steps after obtaining fastq files occur on a Linux/Unix system
 Flexbar (3.0.3) is used for trimming adapter sequences on reads. Since Nextera-compatible indexing primers were used, we can use the -aa Nextera option. If analyzing other adapter sequences, you may need to specify your adapter sequences in a fasta file. It is suggested to submit as array jobs as there are so many files. If using a system with slurm manager, the #SBATCH -a option can be used. This should be changed if using other systems.
 
 ```bash
+cd $WORKDIR/software
 sbatch flexbar.sh
 ```
 
 ***2) Genome alignment and feature counting***
 This step can take alot of time if all cells are processed in one job. There therefore it is recommended to break up the files into several "batches" that can be run simultaneously. Therefore 5 different groups of "WT" or APOBEC1-YTH-expressing cells and 3 different groups of "mut" or APOBEC1-YTHmut-expressing cells can be run at a time as separate jobs. These can be re-integrated later in Seurat.
 
+Copy the scripts to the rawfiles directory and then submit them.
+
 ```bash
+cp $WORKDIR/software/StarsoloalignWT.sh $WORKDIR/rawfiles/
+cp $WORKDIR/software/StarsoloalignMUT.sh $WORKDIR/rawfiles/
+cd $WORKDIR/rawfiles
 sbatch StarsoloalignWT.sh
 sbatch StarsoloalignMUT.sh
 ```
@@ -136,6 +142,8 @@ There are 4 Major Steps
 ***1) Genome alignment***
 For the analysis of methylation, it is easiest to align the sequences to the genome again using STAR, but not the STARsolo option. This will generate a separate bamfile for each cell. It is easiest to do this as an array, so that many files be aligned simultaneously. The #SBATCH -a option allows for this with the SLURM managment system. If you are not using SLURM, you may need to change the command. If these are run sequencially the job will be a very long time.
 ```bash
+cp $WORKDIR/software/STARBullseyealign.sh $WORKDIR/rawfiles/
+cd $WORKDIR/rawfiles
 sbatch STARBullseyealign.sh
 ```
 
