@@ -111,45 +111,15 @@ The first two steps after obtaining fastq files occur on a Linux/Unix system
 Flexbar (3.0.3) is used for trimming adapter sequences on reads. Since Nextera-compatible indexing primers were used, we can use the -aa Nextera option. If analyzing other adapter sequences, you may need to specify your adapter sequences in a fasta file. It is suggested to submit as array jobs as there are so many files. If using a system with slurm manager, the #SBATCH -a option can be used. This should be changed if using other systems.
 
 ```bash
-#!/bin/bash
-#SBATCH -a 1-1667
-
-WORKDIR=/your/path/here
-FASTQ=$WORKDIR/rawfiles #input directory
-TRIM=$WORKDIR/trim #output directory
-mkdir -p $TRIM
-
-file=$(ls $FASTQ/*_1.fastq.gz | sed -n ${SLURM_ARRAY_TASK_ID}p)  ## the ls a basename argument will change depending on how your files are named
-STEM=$(basename "$file" _1.fastq.gz)
-
-R1="$STEM"_1.fastq.gz # reassign full name to Read1
-R2="$STEM"_2.fastq.gz # assign name to Read 2
-
-flexbar -r $FASTQ/$R1 -p FASTQ/$R2 -aa Nextera --zip-output GZ --threads 16 -qf i1.8 -t $TRIM/$STEM
+sbatch flexbar.sh
 ```
 
 ***2) Genome alignment and feature counting***
 This step can take alot of time if all cells are processed in one job. There therefore it is recommended to break up the files into several "batches" that can be run simultaneously. Therefore 5 different groups of "WT" or APOBEC1-YTH-expressing cells and 3 different groups of "mut" or APOBEC1-YTHmut-expressing cells can be run at a time as separate jobs. These can be re-integrated later in Seurat.
 
 ```bash
-#!/bin/bash
-#SBATCH -a 1-1667
-
-file=$(ls $FASTQ/*_1.fastq.gz | sed -n ${SLURM_ARRAY_TASK_ID}p)  ## the ls a basename argument will change depending on how your files are named
-STEM=$(basename "$file" _1.fastq.gz)
-
-STAR --genomeDir $WORKDIR/STARindex/ \
---runThreadN 8 \
---readFilesIn [List of fastq.gz files in batch. These must match the files specified in the manifest being used] \
---readFilesCommand zcat \
---outFileNamePrefix  $WORKDIR/aligned/$STEM \
---outSAMtype BAM Unsorted \
---outFilterMismatchNoverReadLmax 0.06 \
---outSAMattrRGline ID: \
---soloType SmartSeq \
---readFilesManifest $WORKDIR/rawfiles/[manifest file name] \
---soloUMIdedup Exact \
---soloStrand Unstranded
+sbatch StarsoloalignWT.sh
+sbatch StarsoloalignMUT.sh
 ```
 ###**Using Seurat to perform QC and eliminate low quality cells**
 The output files will be in a directory $WORKDIR/aligned/$STEMSolo.out/Gene/filtered. Move the output files from STARsolo (barcodes.tsv, features.tsv,matrix.mtx) to a new directory $WORKDIR/Data so that there are subdirectories for each batch that was run for the genome alignment ($WORKDIR/Data/WT1/, $WORKDIR/Data/WT2/, $WORKDIR/Data/WT3/, etc.). Then open an R session and run the "1_SeuratQCandcellfiltering.R" script. This will take all the files, create a Seurat Object, perform basic QC and generate graphs. THen it filter cells based on several criteria: at least 1,000,000 reads, at least 9,000 genes, a log10genes/reads ratio of 0.58, less than 10% mitochondrial RNAs. Then it will generate the QC graphs on the filtered dataset.
@@ -166,31 +136,7 @@ There are 4 Major Steps
 ***1) Genome alignment***
 For the analysis of methylation, it is easiest to align the sequences to the genome again using STAR, but not the STARsolo option. This will generate a separate bamfile for each cell. It is easiest to do this as an array, so that many files be aligned simultaneously. The #SBATCH -a option allows for this with the SLURM managment system. If you are not using SLURM, you may need to change the command. If these are run sequencially the job will be a very long time.
 ```bash
-#!/bin/bash
-#SBATCH -a 1-1667
-
-file=$(ls *_1.fastq.gz | sed -n ${SLURM_ARRAY_TASK_ID}p) ## this is done for paired end libraries ending with _1 and _2 for each pair.
-STEM=$(basename "$file" _1.fastq.gz)
-BAM=$WORKDIR/singlebams
-mkdir -p $BAM
-
-echo "aligning $STEM"
-
-STAR --runMode alignReads \
---genomeDir $WORKDIR/Starindex \
---runThreadN 8 \
---readFilesIn $dir/${STEM}_1.fastq.gz $dir/${STEM}_2.fastq.gz \
---readFilesCommand zcat \
---outSAMtype BAM SortedByCoordinate \
---outFilterMismatchNoverReadLmax 0.06 \
---outFileNamePrefix $BAM/${STEM}. \
-
-#This next steps marks PCR duplicates in the BAM file so they can be ignored during the next step
-STAR --runMode inputAlignmentsFromBAM \
---runThreadN 4 \
---inputBAMfile $BAM/${STEM}.Aligned.sortedByCoord.out.bam \
---bamRemoveDuplicatesType UniqueIdentical \
---outFileNamePrefix $BAM/${STEM}.dupMarked.bam
+sbatch STARBullseyealign.sh
 ```
 
 
