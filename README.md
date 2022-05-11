@@ -1,7 +1,7 @@
 # scDART in HEK293T cells
 
 ## **Overview**
-This contains information necessary for reproducing the identification of m<sup>6</sup>A. In this example, 300 APOBEC1-YTH and 300 APOBEC1-YTHmut expressing cells will be analyzed. Please replace all instances of $WORKDIR with path to your working directory.
+This contains information necessary for reproducing the identification of m<sup>6</sup>A. In this example, 300 APOBEC1-YTH and 300 APOBEC1-YTHmut expressing cells will be analyzed. Please replace all instances of $WORKDIR with path to your working directory. All code files should be downloaded to a directory $WORKDIR/software. $WORKDIR is the full path to the working directory being used for this analysis. Any instance of $WORKDIR present in code should either be defined as or replaced with the full path to the working directory.
 
 **Prerequisites**
 1) Download raw fastq files
@@ -31,8 +31,8 @@ sbatch renameYTHmut.sh
 ```
 Once you are **sure** the files have been renamed and moved to the $WORKDIR/rawfiles directory, you can delete the originals. The scripts above copy the files, preventing the need to redownload in the case of an error.
 ```bash
-rm $WORKDIR/YTH/*
-rm $WORKDIR/YTHmut/*
+rm -r $WORKDIR/YTH
+rm -r $WORKDIR/YTHmut
 ```
 
 ***2) Install Bullseye, flexbar, and STAR***
