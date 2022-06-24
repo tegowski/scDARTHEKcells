@@ -142,9 +142,11 @@ There are 4 Major Steps
 ***1) Genome alignment***
 For the analysis of methylation, it is easiest to align the sequences to the genome again using STAR, but not the STARsolo option. This will generate a separate bamfile for each cell. It is easiest to do this as an array, so that many files be aligned simultaneously. The #SBATCH -a option allows for this with the SLURM managment system. If you are not using SLURM, you may need to change the command. If these are run sequencially the job will be a very long time.
 ```bash
-cp $WORKDIR/software/STARBullseyealign.sh $WORKDIR/rawfiles/
+cp $WORKDIR/software/STARBullseyealignWT.sh $WORKDIR/rawfiles/
+cp $WORKDIR/software/STARBullseyealignMUT.sh $WORKDIR/rawfiles/
 cd $WORKDIR/rawfiles
-sbatch STARBullseyealign.sh
+sbatch STARBullseyealignWT.sh
+sbatch STARBullseyealignMUT.sh
 ```
 
 
