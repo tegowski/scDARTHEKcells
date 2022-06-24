@@ -62,6 +62,7 @@ cpanm MCE
 #Install flexbar and STAR
 conda install -c bioconda flexbar=3.0.3
 conda install -c bioconda STAR=2.7.5c
+conda install -c r r=4.0.0
 ```
 
 ***3) Download Seurat***
