@@ -159,15 +159,14 @@ cd $WORKDIR/singlebams
 sbatch MakematrixYTH.sh
 ```
 
-The APOBEC1-YTHmut-expressing cells are merged together at the bam level to create an average editing score.
+Optical duplicates are removed from each APOBEC1-YTHmut-expressing cell.
 ```bash
-#!/bin/bash
-
-filelist=$(cat listofAPOYTHmutbamfiles.txt)
-samtools merge APOYTHmutmerge.bam $filelist
+cp $WORKDIR/software/RemoveduplicatesMUT.sh $WORKDIR/singlebams
+cd $WORKDIR/singlebams
+sbatch RemoveduplicatesMUT.sh
 ```
 
-Then the merged APOBEC1-YTHmut bamfile is parsed.
+Then the APOBEC1-YTHmut bamfiles are merged and that merged bamfile is parsed. This creates an average nucleotide representation matrix across all APOBEC1-YTHmut cells sequenced.
 ```bash
 #!/bin/bash
 
