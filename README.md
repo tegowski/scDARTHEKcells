@@ -152,17 +152,11 @@ sbatch STARBullseyealignMUT.sh
 
 
 ***2) Parse bamfiles***
-First, parse the bamfiles of each APOBEC1-YTH-expressing cell
+First, parse the bamfiles of each APOBEC1-YTH-expressing cell. This step uses samtools to eliminate optical duplicates from the bamfile before using Bullseye to parse the reads and determine the nucleotide composition at every location with a minimum coverage.
 ```bash
-#!/bin/bash
-#SBATCH -a 1-1254
-
-BAMS=$WORKDIR/singlebams
-file=$(ls WT*dupMarked.bam | sed -n ${SLURM_ARRAY_TASK_ID}p)
-STEM=$(basename "$file" .dupmarked.bam)
-mkdir $WORKDIR/matrix
-
-perl $WORKDIR/software/parseBAM.pl -i $file -o $WORKDIR/matrix/$STEM.matrix --minCoverage 3 --verbose --removeDuplicates
+cp $WORKDIR/software/MakematrixYTH.sh $WORKDIR/singlebams
+cd $WORKDIR/singlebams
+sbatch MakematrixYTH.sh
 ```
 
 The APOBEC1-YTHmut-expressing cells are merged together at the bam level to create an average editing score.
