@@ -1,9 +1,20 @@
 #!/bin/bash
-#SBATCH -a 1-1254
+#SBATCH --mem=60G
+#SBATCH -c 12
+#SBATCH -p scavenger
 
+#Merge all MUT bamfiles
+samtools merge MUTCellsmerged.bam MUT*duprm.bam
+
+#Then use Bullseye (parseBAM.pl) to make nucleotide matrix
+WORKDIR="/work/mrt41/Ex96_SMARTseq/test"
 BAMS=$WORKDIR/singlebams
-file=$APOYTHmutmerge.bam
-STEM=$(basename "$file" .bam)
+STEM=$(basename "$file" Aligned.sortedByCoord.out.bam.duprm.bam)
 mkdir $WORKDIR/matrix
 
-perl $WORKDIR/software/parseBAM.pl -i $file -o $WORKDIR/matrix/$STEM.matrix --minCoverage 3 --verbose --removeDuplicates
+perl $WORKDIR/software/parseBAM.pl \
+-i MUTCellsmerged.bam \
+-o $WORKDIR/matrix/MUTCellsmerged.matrix \
+--minCoverage 5 \
+--verbose \
+--removeDuplicates
