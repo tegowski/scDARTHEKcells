@@ -22,8 +22,8 @@ rm $STEM.name.bam $STEM.fix.bam $STEM.possort.bam
 #Then use Bullseye (parseBAM.pl) to make nucleotide matrix
 WORKDIR="/your/path/here"
 BAMS=$WORKDIR/singlebams
-file=$(ls WT*dupMarked.bam | sed -n ${SLURM_ARRAY_TASK_ID}p)
-STEM=$(basename "$file" .dupmarked.bam)
+file=$(ls WT*duprm.bam | sed -n ${SLURM_ARRAY_TASK_ID}p)
+STEM=$(basename "$file" .duprm.bam)
 mkdir $WORKDIR/matrix
 
 perl $WORKDIR/software/parseBAM.pl \
