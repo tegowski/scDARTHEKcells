@@ -182,3 +182,19 @@ cd $WORKDIR/matrix
 sbatch find_RNA_edit_sites.sh
 ```
 
+***4) Add cell ID to bed files and make one file with all sites in all cells***
+This step will take the Cell ID (e.g. WTCell1) contained within the bed file names and add it as a column to the each of the bed files.
+
+```bash
+cp $WORKDIR/software/addCellIDs.sh $WORKDIR/bed
+cd $WORKDIR/bed
+sbatch addCellIDs.sh
+```
+
+Then concatenate all the bedfiles together
+
+```bash
+cat 2_WTCell*.bed > Sitesinallcells.sh
+```
+
+
