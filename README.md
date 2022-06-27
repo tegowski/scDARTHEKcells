@@ -176,6 +176,8 @@ sbatch MakematrixYTHmut.sh
 ***3) Find C-to-U mutations***
 The next step is to compare the C-to-U (C-to-T in DNA sequencing) mutations found in each APOBEC1-YTH cell to the mutation rate in the average APOBEC1-YTHmut cells. By using thresholds for minimum coverage, minimum/maximum C2U editing percentage, and a fold-change in editing over APOBEC1-YTHmut cells, we can filter out noise due to sequencing errors/SNPs and many APOBEC1 (non-YTH)-mediated editing events.
 
+This step requires a refFlat annotation file. Please use the annotation file provided here if repeating this dataset. If using a different (non-human) dataset, please see https://github.com/mflamand/Bullseye for instructions on how to generate a refFlat gtf file for your organism of interest.
+
 ```bash
 cp $WORKDIR/software/find_RNA_edit_sites.sh $WORKDIR/matrix
 cd $WORKDIR/matrix
