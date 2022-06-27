@@ -4,8 +4,8 @@
 #SBATCH -c 8
 #SBATCH -a 1-301
 
-annotation_file=/datacommons/meyerlab/userdata/matt_tego/gtf/HG38/hg38refFlat_nochr.gtf
 WORKDIR="/your/path/here/"
+annotation_file=$WORKDIR/software/hg38refFlat_nochr.gtf
 bed=$WORKDIR/bed
 file=$(ls WT*matrix.gz | sed -n ${SLURM_ARRAY_TASK_ID}p)
 STEM=$(basename "$file" .matrix.gz)
