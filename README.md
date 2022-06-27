@@ -168,9 +168,9 @@ sbatch RemoveduplicatesMUT.sh
 
 Then the APOBEC1-YTHmut bamfiles are merged and that merged bamfile is parsed. This creates an average nucleotide representation matrix across all APOBEC1-YTHmut cells sequenced.
 ```bash
-#!/bin/bash
-
-perl $WORKDIR/software/parseBAM.pl --input APOYTHmutmerge.bam --output $WORKDIR/matrix/APOYTHmut.matrix --verbose --removeDuplicates --minCoverage 3
+cp $WORKDIR/software/MakematrixYTHmut.sh $WORKDIR/singlebams
+cd $WORKDIR/singlebams
+sbatch MakematrixYTHmut.sh
 ```
 
 ***3) Find C-to-U mutations***
