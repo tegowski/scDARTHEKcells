@@ -194,7 +194,7 @@ sbatch addCellIDs.sh
 Then concatenate all the bedfiles together
 
 ```bash
-cat 2_WTCell*.bed > Sitesinallcells.sh
+cat 2_WTCell*.bed > Sitesinallcells.bed
 ```
 
 
