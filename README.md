@@ -199,4 +199,37 @@ Then concatenate all the bedfiles together
 cat 2_WTCell*.bed > Sitesinallcells.bed
 ```
 
+***5) Filter for sites that occur in R-A-C motif (G/A-A-C).*** 
+This enriches for sites with C2U editing adjacent to m6A site.
+
+```bash
+cp $WORKDIR/software/RACfilter.sh $WORKDIR/bed
+cd $WORKDIR/bed
+sbatch RACfilter.sh
+```
+
+***6) Eliminate sites that were found to have editing in HEK293T cells when APOBEC1 was overexpressed by itself.***
+This should only eliminate a very small proportion of sites and only offers a modest improvement in site quality. If using a system other than HEK293T cells, this step can be omitted.
+
+```bash
+cd $WORKDIR/bed
+R
+```
+Note: replace $WORKDIR in the below script with your working directory path
+
+```R
+> library(tidyverse)
+> apoonly <- read.table("DARTseq_APOonly_hg382.bed", col.names=c("chr","start","end"))
+> head(apoonly)
+> dartsites <- read.table("Sitesinallcells.3nt.RAC.bed")
+> head(dartsites)
+> #Add position column to compare with
+> apoonly <- apoonly %>% mutate(pos = paste0(chr,"-",start))
+> dartsites <- dartsites %>% mutate(pos = paste0(V1,"-",V2))
+> #Filter dartsites for only those that don't appear in apoonly
+> dartsitesfilt <- dartsites %>% filter(!pos %in% apoonly$pos)
+> write.table(dartsitesfilt,file="Sitesinallcells_APOfilt.bed",col.names=F,row.names=F,quote=F,sep="\t")
+```
+
+
 
