@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -a 1-1667
 
-WORKDIR=/your/path/here
+WORKDIR="/your/path/here"
 FASTQ=$WORKDIR/rawfiles #input directory
 TRIM=$WORKDIR/trim #output directory
 mkdir -p $TRIM
