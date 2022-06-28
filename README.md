@@ -170,7 +170,7 @@ Then the APOBEC1-YTHmut bamfiles are merged and that merged bamfile is parsed. T
 ```bash
 cp $WORKDIR/software/MakematrixYTHmut.sh $WORKDIR/singlebams
 cd $WORKDIR/singlebams
-sbatch MakematrixYTHmut.sh
+sbatch Make_matrixYTHmut.sh
 ```
 
 ***3) Find C-to-U mutations***
