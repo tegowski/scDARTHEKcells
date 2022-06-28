@@ -1,20 +1,23 @@
 #!/bin/bash
-#SBATCH --mem=60G
+#SBATCH -a 1-300
 #SBATCH -c 12
-#SBATCH -p scavenger
+#SBATCH --mem=60G
 
-#Merge all MUT bamfiles
-samtools merge MUTCellsmerged.bam MUT*duprm.bam
+#Define path to your working directory
+WORKDIR="/your/path/here"
 
-#Then use Bullseye (parseBAM.pl) to make nucleotide matrix
-WORKDIR="/your/path/here/"
-BAMS=$WORKDIR/singlebams
-STEM=$(basename "$file" Aligned.sortedByCoord.out.bam.duprm.bam)
-mkdir $WORKDIR/matrix
+file=$(ls MUTCell*_1.fastq | sed -n ${SLURM_ARRAY_TASK_ID}p) ## this is done for paired end libraries ending with _1 and _2 for each pair.
+STEM=$(basename "$file" _1.fastq)
 
-perl $WORKDIR/software/parseBAM.pl \
--i MUTCellsmerged.bam \
--o $WORKDIR/matrix/MUTCellsmerged.matrix \
---minCoverage 5 \
---verbose \
---removeDuplicates
+BAM=$WORKDIR/singlebams
+mkdir -p $BAM
+
+echo "aligning $STEM"
+
+STAR --runMode alignReads \
+--genomeDir $WORKDIR/STARindex \
+--runThreadN 12 \
+--readFilesIn ${STEM}_1.fastq ${STEM}_2.fastq \
+--outSAMtype BAM SortedByCoordinate \
+--outFilterMismatchNoverReadLmax 0.06 \
+--outFileNamePrefix $BAM/${STEM}
