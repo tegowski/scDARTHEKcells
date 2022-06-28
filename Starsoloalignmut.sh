@@ -3,7 +3,7 @@
 #SBATCH -c 8
 #SBATCH --mem=60G
 
-#This script should be run from the $WORKDIR/YTH directory
+#This script should be run from the $WORKDIR/trim directory
 #Replace $WORKDIR with the path to your directory
 WORKDIR="/your/path/here"
 mkdir -p $WORKDIR/aligned
