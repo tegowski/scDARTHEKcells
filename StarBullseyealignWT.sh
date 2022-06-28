@@ -20,11 +20,4 @@ STAR --runMode alignReads \
 --readFilesIn ${STEM}_1.fastq ${STEM}_2.fastq \
 --outSAMtype BAM SortedByCoordinate \
 --outFilterMismatchNoverReadLmax 0.06 \
---outFileNamePrefix $BAM/${STEM} \
-
-#This next steps marks PCR duplicates in the BAM file so they can be ignored during the next step
-STAR --runMode inputAlignmentsFromBAM \
---runThreadN 12 \
---inputBAMfile $BAM/${STEM}.Aligned.sortedByCoord.out.bam \
---bamRemoveDuplicatesType UniqueIdentical \
---outFileNamePrefix $BAM/${STEM}.dupMarked.bam
+--outFileNamePrefix $BAM/${STEM}
