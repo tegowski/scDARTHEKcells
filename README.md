@@ -231,5 +231,24 @@ Note: replace $WORKDIR in the below script with your working directory path
 > write.table(dartsitesfilt,file="Sitesinallcells_APOfilt.bed",col.names=F,row.names=F,quote=F,sep="\t")
 ```
 
+***7) Eliminate sites associated with cell barcodes that did not pass quality control steps in Seurat (instructions above)***
+The bedfile containing the list of all sites has the cell IDs listed in one of the columns. Here, that file will be loaded into R, along with another file that was created above after performing the quality control steps using Seurat. It is a list of all cell IDs that passed the QC metrics. The script below will filter out sites from cell IDs that are not in this list.
+
+```R
+library(tidyverse)
+
+> sitelist <- read.table("bed/Sitesinallcells_APOfilt.bed")
+> FilteredCells <- read.table("aligned/QCpasscells.txt", header=T)
+#Filter out sites in low quality cells
+> sitelist2 <- sitelist %>% filter(V12 %in% FilteredCells$x)
+#Now find the number of cells each site is in and filter out those in < 10 cells
+> ncells <- sitelist2 %>% group_by(V14) %>% count()
+> sitelist3 <- merge(sitelist2, ncells, by="V14")
+> sitelist3 <- sitelist3 %>% filter(n > 9)
+> write.table(sitelist2, file="/work/mrt41/Ex96_SMARTseq/test/bed/Finalsitelist.bed", row.names=F, col.names=T,sep="\t",quote=F)
+```
+
+The final output is a list of all sites found in all cells. The list of sites produced by running the scripts above from the downloaded data is available here (listofsites.txt). It contains the genomic coordinates of the site, the C2U mutation rate (0.4 = 40%), the cell ID, along with other information.
+
 
 
